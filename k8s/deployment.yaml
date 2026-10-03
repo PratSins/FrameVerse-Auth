@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frameverse-auth
+  labels:
+    app: frameverse-auth
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: frameverse-auth
+  template:
+    metadata:
+      labels:
+        app: frameverse-auth
+    spec:
+      containers:
+        - name: auth
+          image: asia-south1-docker.pkg.dev/PROJECT_ID/cloud-run-source-deploy/frameverse-auth:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            - name: ENVIRONMENT
+              value: "production"
+            - name: ACCESS_TOKEN_TTL_MINUTES
+              value: "60"
+            - name: REFRESH_TOKEN_TTL_DAYS
+              value: "7"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: frameverse-auth-secret
+                  key: database-url
+          resources:
+            requests:
+              cpu: 50m
+              memory: 50Mi
+            limits:
+              cpu: 50m
+              memory: 50Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frameverse-auth
+  labels:
+    app: frameverse-auth
+spec:
+  type: ClusterIP
+  selector:
+    app: frameverse-auth
+  ports:
+    - port: 8080
+      targetPort: 8080

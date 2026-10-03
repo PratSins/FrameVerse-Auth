@@ -1,0 +1,44 @@
+# Binaries & build artifacts
+bin/
+dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+auth-server
+
+# Test binaries & coverage
+*.test
+*.out
+coverage.html
+
+# Environment & local secrets
+.env
+.env.local
+.env.*.local
+*.local
+env_values.txt
+*-key.json
+
+# Cryptographic keys and certs
+*.pem
+*.key
+*.crt
+*.cer
+*.pfx
+*.p12
+id_rsa*
+
+# IDEs and OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
